@@ -1,0 +1,6 @@
+@pingpongpush_HostAddress = http://localhost:5259
+
+GET {{pingpongpush_HostAddress}}/PushNotificatio/
+Accept: application/json
+
+###
