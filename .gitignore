@@ -1,0 +1,9 @@
+/PushNotificationService/bin/
+/PushNotificationService/obj/
+/PushNotificationService/dist/
+
+/PushNotificationService/.vs/
+
+/PushNotificationService/pingpong-message-firebase-adminsdk-fbsvc-9b2981b8f5.json
+/PushNotificationService/pingpongpush.csproj.user
+/PushNotificationService/appsettings.Development.json
