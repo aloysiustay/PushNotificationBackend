@@ -137,7 +137,6 @@ namespace PushNotificationService
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(m_SecretKey)))
             {
                 expectedSignature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(dataToSign)));
-                expectedSignature = WebUtility.UrlEncode(expectedSignature);
             }
             Console.WriteLine(expectedSignature);
             Console.WriteLine(_signature);
