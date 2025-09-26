@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using static System.Net.Mime.MediaTypeNames;
+using System.Net;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace PushNotificationService
 {
@@ -26,6 +28,8 @@ namespace PushNotificationService
         public ConcurrentDictionary<int, HashSet<string>> m_Tokens = new();
         private readonly string m_ProjectId = "pingpong-message";
         private readonly GoogleCredential m_Credential;
+        private string? m_BaseUrl = Environment.GetEnvironmentVariable("PUSH_NOTIFICATION_BASE_URL");
+        private string m_SecretKey;
 
         public NotificationService()
         {
@@ -35,6 +39,9 @@ namespace PushNotificationService
                 m_Credential = GoogleCredential.FromStream(stream)
                                                .CreateScoped("https://www.googleapis.com/auth/firebase.messaging");
             }
+            var key = new byte[32];
+            RandomNumberGenerator.Fill(key);
+            m_SecretKey = Convert.ToBase64String(key);
         }
         public async Task SendAll(string _title, string _msg, string _image, int _queueNumber)
         {
@@ -82,7 +89,17 @@ namespace PushNotificationService
                 return;
             }
 
-            string image = $"https://pushnotificationbackend-kvi4.onrender.com/api/PushNotification/{_queueNumber.ToString()}?image={_image}";
+            var url = $"{m_BaseUrl}/api/PushNotification";
+
+            string dataToSign = $"{_queueNumber}|{_image}";
+            string signature;
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(m_SecretKey)))
+            {
+                signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(dataToSign)));
+                signature = WebUtility.UrlEncode(signature);
+            }
+
+            string image = $"{url}/{_queueNumber.ToString()}?image={_image}&sig={signature}";
 
             var accessToken = await m_Credential.UnderlyingCredential.GetAccessTokenForRequestAsync();
 
@@ -112,6 +129,19 @@ namespace PushNotificationService
                 }
             }
         }
+
+        public bool VerifyUrl(string _image, int _queueNumber, string _signiture)
+        {
+            string dataToSign = $"{_queueNumber}|{_image}";
+            string expectedSigniture;
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(m_SecretKey)))
+            {
+                expectedSigniture = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(dataToSign)));
+            }
+
+            return expectedSigniture != _signiture;
+        }
+
         public async Task<NotificationResult> SendMobileMessage(string _token, string _title, string _msg, string _image)
         {
             using var client = new HttpClient();
