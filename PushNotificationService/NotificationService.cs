@@ -100,7 +100,7 @@ namespace PushNotificationService
                 signature = WebUtility.UrlEncode(signature);
             }
 
-            string image = $"{url}/{_queueNumber.ToString()}?image={_image}&signiture={signature}";
+            string image = $"{url}/{_queueNumber.ToString()}?image={_image}&signature={signature}";
             var accessToken = await m_Credential.UnderlyingCredential.GetAccessTokenForRequestAsync();
 
             using var client = new HttpClient();
@@ -130,16 +130,16 @@ namespace PushNotificationService
             }
         }
 
-        public bool VerifyUrl(string _image, int _queueNumber, string _signiture)
+        public bool VerifyUrl(string _image, int _queueNumber, string _signature)
         {
             string dataToSign = $"{_queueNumber}|{_image}";
-            string expectedSigniture;
+            string expectedSignature;
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(m_SecretKey)))
             {
-                expectedSigniture = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(dataToSign)));
+                expectedSignature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(dataToSign)));
+                expectedSignature = WebUtility.UrlEncode(expectedSignature);
             }
-            var decodedSignature = WebUtility.UrlDecode(_signiture);
-            return expectedSigniture == decodedSignature;
+            return expectedSignature == _signature;
         }
 
         public async Task<NotificationResult> SendMobileMessage(string _token, string _title, string _msg, string _image)

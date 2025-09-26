@@ -59,9 +59,9 @@ namespace PushNotificationService.Controllers
         }
 
         [HttpGet("{queueNumber}")]
-        public IActionResult GetQueueImage(int queueNumber, [FromQuery] string image, [FromQuery] string signiture)
+        public IActionResult GetQueueImage(int queueNumber, [FromQuery] string image, [FromQuery] string signature)
         {
-            if (!m_NotificationService.VerifyUrl(image, queueNumber, signiture))
+            if (!m_NotificationService.VerifyUrl(image, queueNumber, signature))
             {
                 return Unauthorized();
             }
