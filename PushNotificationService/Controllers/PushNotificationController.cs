@@ -62,7 +62,10 @@ namespace PushNotificationService.Controllers
         public IActionResult GetQueueImage(int queueNumber, [FromQuery] string image, [FromQuery] string signiture)
         {
             if (!m_NotificationService.VerifyUrl(image, queueNumber, signiture))
+            {
+
                 return Unauthorized();
+            }
 
             string baseImagePath = Path.Combine("wwwroot", "images", image);
             Console.WriteLine(baseImagePath);

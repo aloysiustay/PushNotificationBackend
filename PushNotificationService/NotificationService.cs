@@ -28,7 +28,7 @@ namespace PushNotificationService
         public ConcurrentDictionary<int, HashSet<string>> m_Tokens = new();
         private readonly string m_ProjectId = "pingpong-message";
         private readonly GoogleCredential m_Credential;
-        private string? m_BaseUrl = Environment.GetEnvironmentVariable("PUSH_NOTIFICATION_BASE_URL");
+        private string? m_BaseUrl;
         private string m_SecretKey;
 
         public NotificationService()
@@ -42,6 +42,7 @@ namespace PushNotificationService
             var key = new byte[32];
             RandomNumberGenerator.Fill(key);
             m_SecretKey = Convert.ToBase64String(key);
+            m_BaseUrl = Environment.GetEnvironmentVariable("PUSH_NOTIFICATION_BASE_URL");
         }
         public async Task SendAll(string _title, string _msg, string _image, int _queueNumber)
         {
@@ -100,7 +101,7 @@ namespace PushNotificationService
             }
 
             string image = $"{url}/{_queueNumber.ToString()}?image={_image}&signiture={signature}";
-
+            Console.WriteLine(image);
             var accessToken = await m_Credential.UnderlyingCredential.GetAccessTokenForRequestAsync();
 
             using var client = new HttpClient();
