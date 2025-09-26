@@ -63,7 +63,6 @@ namespace PushNotificationService.Controllers
         {
             if (!m_NotificationService.VerifyUrl(image, queueNumber, signiture))
             {
-
                 return Unauthorized();
             }
 
