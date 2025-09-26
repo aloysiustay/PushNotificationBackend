@@ -138,8 +138,6 @@ namespace PushNotificationService
             {
                 expectedSignature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(dataToSign)));
             }
-            Console.WriteLine(expectedSignature);
-            Console.WriteLine(_signature);
             return expectedSignature == _signature;
         }
 
