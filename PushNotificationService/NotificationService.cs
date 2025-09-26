@@ -99,7 +99,7 @@ namespace PushNotificationService
                 signature = WebUtility.UrlEncode(signature);
             }
 
-            string image = $"{url}/{_queueNumber.ToString()}?image={_image}&sig={signature}";
+            string image = $"{url}/{_queueNumber.ToString()}?image={_image}&signiture={signature}";
 
             var accessToken = await m_Credential.UnderlyingCredential.GetAccessTokenForRequestAsync();
 
